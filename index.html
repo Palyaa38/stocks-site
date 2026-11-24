@@ -169,7 +169,8 @@
 
   <script>
     // Load picks from picks.json
-    fetch('picks.json?v=' + Date.now())
+    const base = window.location.pathname.replace(/\/[^/]*$/, '/');
+    fetch(base + 'picks.json?v=' + Date.now())
       .then(r => r.json())
       .then(data => {
         document.getElementById('date-line').textContent = data.date || '';
