@@ -1,0 +1,51 @@
+{
+  "date": "Tuesday, Nov 25, 2026",
+  "updated": "6:30 AM PST",
+  "picks": [
+    {
+      "ticker": "BENF",
+      "company": "Beneficient",
+      "price": "0.93",
+      "change": "+105.8",
+      "setup": "Momentum Breakout",
+      "entry": "Break above $0.95 and hold 2+ min",
+      "stop": "$0.78",
+      "target": "$1.05–$1.10",
+      "shares": "588",
+      "cost": "295",
+      "max_loss": "$88",
+      "profit_target": "$70–$100",
+      "catalyst": "Court approved $211M debt recovery — 39x avg volume, RSI not overbought"
+    },
+    {
+      "ticker": "POWW",
+      "company": "Outdoor Holding Co",
+      "price": "2.90",
+      "change": "+11.3",
+      "setup": "52-Week High Breakout",
+      "entry": "Break above $2.95 with volume surge",
+      "stop": "$2.65",
+      "target": "$3.20–$3.40",
+      "shares": "100",
+      "cost": "290",
+      "max_loss": "$30",
+      "profit_target": "$25–$50",
+      "catalyst": "Earnings beat — EPS +100%, revenue +6.5% — 3.4x avg volume"
+    },
+    {
+      "ticker": "PLX",
+      "company": "Protalix BioTherapeutics",
+      "price": "3.18",
+      "change": "+8.2",
+      "setup": "52-Week High Breakout",
+      "entry": "Clean break above $3.20",
+      "stop": "$2.85",
+      "target": "$3.50–$3.70",
+      "shares": "93",
+      "cost": "296",
+      "max_loss": "$32",
+      "profit_target": "$30–$48",
+      "catalyst": "Earnings beat — EPS +350%, revenue +76% — Elfabrio margin expansion"
+    }
+  ]
+}

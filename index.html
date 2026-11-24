@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Stock Picks</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0d0d;
+      color: #f0f0f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px 0 12px;
+      border-bottom: 1px solid #222;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #00e676;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      font-size: 0.75rem;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .rank {
+      font-size: 0.7rem;
+      color: #555;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .ticker {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #00e676;
+    }
+
+    .price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .change-up { color: #00e676; font-weight: 700; font-size: 0.9rem; }
+    .change-down { color: #ff5252; font-weight: 700; font-size: 0.9rem; }
+
+    .setup-type {
+      font-size: 0.72rem;
+      background: #00e67620;
+      color: #00e676;
+      border: 1px solid #00e67640;
+      border-radius: 20px;
+      padding: 2px 10px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .rows { display: flex; flex-direction: column; gap: 7px; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      padding: 6px 0;
+      border-bottom: 1px solid #252525;
+    }
+
+    .row:last-child { border-bottom: none; }
+
+    .row-label { color: #888; }
+
+    .row-value { font-weight: 600; color: #f0f0f0; }
+
+    .row-value.green { color: #00e676; }
+    .row-value.red { color: #ff5252; }
+    .row-value.yellow { color: #ffd740; }
+
+    .catalyst {
+      margin-top: 12px;
+      background: #111;
+      border-left: 3px solid #ffd740;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      color: #bbb;
+      line-height: 1.5;
+    }
+
+    .catalyst span { color: #ffd740; font-weight: 700; }
+
+    .warning {
+      background: #1a1000;
+      border: 1px solid #ffd74040;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.72rem;
+      color: #999;
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    .warning strong { color: #ffd740; }
+
+    .updated {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #444;
+      margin-top: 16px;
+      padding-bottom: 20px;
+    }
+
+    .no-picks {
+      text-align: center;
+      padding: 40px 20px;
+      color: #555;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📈 DAILY PICKS</h1>
+    <p id="date-line">Loading...</p>
+  </header>
+
+  <div id="picks-container">
+    <!-- Injected by update script -->
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ Disclaimer</strong><br>
+    These are research setups only. Do NOT trade without confirming live price, volume, and your own analysis. Max risk $100 per trade. Account size $300.
+  </div>
+
+  <div class="updated" id="updated-line"></div>
+
+  <script>
+    // Load picks from picks.json
+    fetch('picks.json?v=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('date-line').textContent = data.date || '';
+        document.getElementById('updated-line').textContent = 'Updated: ' + (data.updated || '');
+
+        const container = document.getElementById('picks-container');
+
+        if (!data.picks || data.picks.length === 0) {
+          container.innerHTML = '<div class="no-picks">No picks today — market may be closed or no setups met the rules.</div>';
+          return;
+        }
+
+        data.picks.forEach((p, i) => {
+          const changeClass = parseFloat(p.change) >= 0 ? 'change-up' : 'change-down';
+          const changeSign = parseFloat(p.change) >= 0 ? '+' : '';
+          container.innerHTML += `
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="rank">#${i+1} Pick</div>
+                  <div class="ticker">${p.ticker}</div>
+                  <div>${p.company}</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="price">$${p.price}</div>
+                  <div class="${changeClass}">${changeSign}${p.change}%</div>
+                </div>
+              </div>
+              <div class="setup-type">${p.setup}</div>
+              <div class="rows">
+                <div class="row">
+                  <span class="row-label">Entry trigger</span>
+                  <span class="row-value yellow">${p.entry}</span>
+                </div>
+                <div class="row">
+                  <span class="row-label">Stop-loss</span>
+                  <span class="row-value red">${p.stop}</span>
+                </div>
+                <div class="row">
+                  <span class="row-label">Target</span>
+                  <span class="row-value green">${p.target}</span>
+                </div>
+                <div class="row">
+                  <span class="row-label">Position size</span>
+                  <span class="row-value">${p.shares} shares (~$${p.cost})</span>
+                </div>
+                <div class="row">
+                  <span class="row-label">Max loss</span>
+                  <span class="row-value red">${p.max_loss}</span>
+                </div>
+                <div class="row">
+                  <span class="row-label">Profit target</span>
+                  <span class="row-value green">${p.profit_target}</span>
+                </div>
+              </div>
+              <div class="catalyst"><span>⚡ Catalyst:</span> ${p.catalyst}</div>
+            </div>
+          `;
+        });
+      })
+      .catch(() => {
+        document.getElementById('picks-container').innerHTML =
+          '<div class="no-picks">Could not load picks. Check back after 6:30 AM PST.</div>';
+      });
+  </script>
+
+</body>
+</html>
