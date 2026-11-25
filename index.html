@@ -119,6 +119,49 @@
 
     .catalyst span { color: #ffd740; font-weight: 700; }
 
+    .trade-plan {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .trade-section {
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .buy-section {
+      background: #00e67610;
+      border: 1px solid #00e67630;
+    }
+
+    .sell-section {
+      background: #ff525210;
+      border: 1px solid #ff525230;
+    }
+
+    .trade-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 7px;
+    }
+
+    .buy-section .trade-title { color: #00e676; }
+    .sell-section .trade-title { color: #ff5252; }
+
+    .trade-rule {
+      font-size: 0.75rem;
+      color: #ccc;
+      padding: 3px 0;
+      border-bottom: 1px solid #ffffff08;
+      line-height: 1.4;
+    }
+
+    .trade-rule:last-child { border-bottom: none; }
+    .trade-rule strong { color: #fff; }
+
     .warning {
       background: #1a1000;
       border: 1px solid #ffd74040;
@@ -227,6 +270,23 @@
                 </div>
               </div>
               <div class="catalyst"><span>⚡ Catalyst:</span> ${p.catalyst}</div>
+
+              <div class="trade-plan">
+                <div class="trade-section buy-section">
+                  <div class="trade-title">🟢 WHEN TO BUY</div>
+                  <div class="trade-rule">Price breaks above <strong>${p.entry.replace('Break above ', '').replace(' with volume', '').replace(' and hold 2+ min on volume', '').replace(' and hold', '')}</strong> on Robinhood</div>
+                  <div class="trade-rule">Volume is spiking (green candle, fast movement)</div>
+                  <div class="trade-rule">Time: <strong>6:30–8:00 AM PST only</strong> — best momentum window</div>
+                  <div class="trade-rule">Do NOT buy if it already ran 20%+ from open</div>
+                </div>
+                <div class="trade-section sell-section">
+                  <div class="trade-title">🔴 WHEN TO SELL</div>
+                  <div class="trade-rule">Hit target <strong>${p.target}</strong> → sell everything immediately</div>
+                  <div class="trade-rule">Price drops to <strong>${p.stop}</strong> → sell, no hesitation</div>
+                  <div class="trade-rule">Time: <strong>Exit by 12:30 PM PST</strong> — do NOT hold overnight</div>
+                  <div class="trade-rule">If flat 30+ min after entry with no movement → exit</div>
+                </div>
+              </div>
             </div>
           `;
         });
