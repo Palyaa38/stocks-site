@@ -1,21 +1,21 @@
 {
   "date": "Wednesday, Nov 25, 2026",
-  "updated": "6:30 AM PST",
+  "updated": "Manual update — 11:30 AM PST",
   "picks": [
     {
       "ticker": "RAYA",
       "company": "Erayak Power Solution Group",
       "price": "0.69",
       "change": "+61.97",
-      "setup": "Momentum Breakout / No-News Float Squeeze",
+      "setup": "Momentum Breakout / Float Squeeze",
       "entry": "Break above $0.75 and hold 2+ min on volume",
       "stop": "$0.58",
       "target": "$0.90–$1.00",
-      "shares": "588",
-      "cost": "406",
-      "max_loss": "$65",
-      "profit_target": "$123–$182",
-      "catalyst": "94x avg volume on 1.02M float — no public catalyst, pure momentum squeeze. Extreme risk, extreme reward."
+      "shares": "434",
+      "cost": "300",
+      "max_loss": "$48",
+      "profit_target": "$91–$135",
+      "catalyst": "94x avg volume on 1.02M float — pure momentum squeeze. No public catalyst, violent moves possible."
     },
     {
       "ticker": "NXAT",
@@ -30,14 +30,14 @@
       "cost": "300",
       "max_loss": "$50",
       "profit_target": "$86–$131",
-      "catalyst": "45x avg volume on 2M float — no confirmed news, momentum-driven. Tiny float = violent moves both ways."
+      "catalyst": "45x avg volume on 2M float — momentum driven. Tiny float means violent moves both ways."
     },
     {
       "ticker": "WHLR",
       "company": "Wheeler REIT",
       "price": "0.44",
       "change": "+31.35",
-      "setup": "Catalyst Breakout (Reverse Split)",
+      "setup": "Catalyst Breakout — Reverse Split",
       "entry": "Break above $0.48 and hold",
       "stop": "$0.37",
       "target": "$0.58–$0.65",
@@ -45,7 +45,7 @@
       "cost": "300",
       "max_loss": "$48",
       "profit_target": "$95–$143",
-      "catalyst": "1-for-4 reverse stock split announced effective Nov 27. 71x avg volume. 44% short float — potential short squeeze setup."
+      "catalyst": "1-for-4 reverse split effective Nov 27. 71x avg volume. 44% short float = potential short squeeze."
     }
   ]
 }
