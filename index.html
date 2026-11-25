@@ -82,7 +82,30 @@
       border-radius: 20px;
       padding: 2px 10px;
       display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .status-badge {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border-radius: 8px;
+      padding: 8px 10px;
       margin-bottom: 12px;
+    }
+
+    .status-fresh    { background: #1a2a1a; color: #00e676; border: 1px solid #00e67650; }
+    .status-watch    { background: #1a1a2a; color: #82b1ff; border: 1px solid #82b1ff50; }
+    .status-entering { background: #00e676; color: #000; border: 1px solid #00e676; animation: pulse 1s infinite; }
+    .status-running  { background: #2a1a00; color: #ffd740; border: 1px solid #ffd74050; }
+    .status-missed   { background: #2a1a1a; color: #ff5252; border: 1px solid #ff525250; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.75; }
     }
 
     .rows { display: flex; flex-direction: column; gap: 7px; }
@@ -243,7 +266,12 @@
                 </div>
               </div>
               <div class="setup-type">${p.setup}</div>
+              <div class="status-badge status-${p.status_key || 'fresh'}">${p.status || 'Checking...'}</div>
               <div class="rows">
+                <div class="row">
+                  <span class="row-label">Day High / Low</span>
+                  <span class="row-value"><span class="green">$${p.day_hi}</span> / <span class="red">$${p.day_lo}</span></span>
+                </div>
                 <div class="row">
                   <span class="row-label">Entry trigger</span>
                   <span class="row-value yellow">${p.entry}</span>
@@ -274,7 +302,7 @@
               <div class="trade-plan">
                 <div class="trade-section buy-section">
                   <div class="trade-title">🟢 WHEN TO BUY</div>
-                  <div class="trade-rule">Price breaks above <strong>${p.entry.replace('Break above ', '').replace(' with volume', '').replace(' and hold 2+ min on volume', '').replace(' and hold', '')}</strong> on Robinhood</div>
+                  <div class="trade-rule">Price breaks above <strong>${p.entry}</strong> on Robinhood</div>
                   <div class="trade-rule">Volume is spiking (green candle, fast movement)</div>
                   <div class="trade-rule">Time: <strong>6:30–8:00 AM PST only</strong> — best momentum window</div>
                   <div class="trade-rule">Do NOT buy if it already ran 20%+ from open</div>

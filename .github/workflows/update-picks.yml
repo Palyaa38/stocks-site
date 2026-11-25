@@ -2,11 +2,13 @@ name: Update Daily Stock Picks
 
 on:
   schedule:
-    # 4:00 AM PST = 12:00 UTC  (Nov–Mar, standard time)
+    # 4:00 AM PST = 12:00 UTC  — pre-market picks (Nov–Mar standard time)
     - cron: '0 12 * * 1-5'
-    # 9:45 AM PST = 17:45 UTC  (mid-session refresh)
+    # 6:45 AM PST = 14:45 UTC  — live open scan
+    - cron: '45 14 * * 1-5'
+    # 9:45 AM PST = 17:45 UTC  — mid-session refresh
     - cron: '45 17 * * 1-5'
-  workflow_dispatch:  # manual trigger from GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   update:
@@ -34,5 +36,5 @@ jobs:
           git config user.name "stock-bot"
           git config user.email "bot@users.noreply.github.com"
           git add picks.json
-          git diff --staged --quiet || git commit -m "Daily picks update $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git diff --staged --quiet || git commit -m "Picks update $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
