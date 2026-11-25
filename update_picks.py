@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """
 Daily stock picks updater.
+Uses Yahoo Finance JSON API — no API key needed.
 Run at 6:30 AM PST Mon-Fri via GitHub Actions.
-Fetches top sub-$1 movers from Finviz and writes picks.json.
 """
 
 import json
 import urllib.request
-import urllib.parse
-import re
 from datetime import datetime
 import pytz
 
@@ -18,91 +16,117 @@ now = datetime.now(PST)
 ACCOUNT_SIZE = 300
 MAX_LOSS = 100
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
+    "Accept": "application/json",
+    "Referer": "https://finance.yahoo.com/"
+}
+
 def fetch_url(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return r.read().decode("utf-8")
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode("utf-8"))
 
 def fetch_sub1_movers():
-    """Fetch sub-$1 gainers from Finviz screener."""
-    url = "https://finviz.com/screener.ashx?v=111&f=sh_price_u1&o=-change"
-    html = fetch_url(url)
-
-    rows = re.findall(
-        r'<a[^>]+class="screener-link-primary"[^>]*>([A-Z]+)</a>.*?'
-        r'class="screener-link"[^>]*>([\d.]+)</.*?'
-        r'([-+][\d.]+)%.*?'
-        r'([\d,]+)',
-        html, re.DOTALL
+    """
+    Hits Yahoo Finance gainers screener (250 results),
+    filters for: price < $1, change > 5%, volume > 2x avg, volume > 100k.
+    """
+    url = (
+        "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved"
+        "?formatted=false&scrIds=day_gainers&count=250&region=US&lang=en-US"
     )
+    try:
+        data = fetch_url(url)
+        quotes = data["finance"]["result"][0]["quotes"]
+    except Exception as e:
+        print(f"Primary screener failed: {e} — trying most actives")
+        quotes = []
+
+    # Fallback: most actives screener
+    if not quotes:
+        try:
+            url2 = (
+                "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved"
+                "?formatted=false&scrIds=most_actives&count=250&region=US&lang=en-US"
+            )
+            data = fetch_url(url2)
+            quotes = data["finance"]["result"][0]["quotes"]
+        except Exception as e:
+            print(f"Fallback screener also failed: {e}")
+            return []
 
     stocks = []
-    for ticker, price, change, volume in rows[:20]:
+    for q in quotes:
         try:
-            p = float(price)
-            c = float(change)
-            v = int(volume.replace(",", ""))
-            if p < 1.0 and c > 10 and v > 500000:
-                stocks.append({"ticker": ticker, "price": p, "change": c, "volume": v})
+            price     = float(q.get("regularMarketPrice", 999))
+            change    = float(q.get("regularMarketChangePercent", 0))
+            volume    = int(q.get("regularMarketVolume", 0))
+            avg_vol   = int(q.get("averageDailyVolume3Month", 1) or 1)
+            rel_vol   = volume / avg_vol
+
+            if price < 1.0 and change > 5 and rel_vol >= 2 and volume > 100_000:
+                stocks.append({
+                    "ticker":  q.get("symbol", ""),
+                    "company": q.get("shortName") or q.get("symbol", ""),
+                    "price":   round(price, 4),
+                    "change":  round(change, 2),
+                    "volume":  volume,
+                    "rel_vol": round(rel_vol, 1),
+                })
         except Exception:
             continue
 
     return sorted(stocks, key=lambda x: x["change"], reverse=True)[:3]
 
-def calc_position(price, stop_price):
-    risk_per_share = price - stop_price
-    if risk_per_share <= 0:
-        return 0, 0
-    shares = int(min(MAX_LOSS / risk_per_share, ACCOUNT_SIZE / price))
-    cost = round(shares * price, 2)
-    max_loss = round(shares * risk_per_share, 2)
-    return shares, cost, max_loss
-
 def build_pick(stock):
-    p = stock["price"]
-    stop = round(p * 0.88, 2)        # 12% stop
-    entry = round(p * 1.03, 2)       # 3% above current = breakout trigger
-    target_lo = round(p * 1.15, 2)
-    target_hi = round(p * 1.25, 2)
-    shares = int(min(MAX_LOSS / (p - stop), ACCOUNT_SIZE / p))
-    cost = round(shares * p, 2)
-    max_loss_val = round(shares * (p - stop), 2)
-    profit = f"${round(shares*(target_lo-p))}–${round(shares*(target_hi-p))}"
+    p     = stock["price"]
+    stop  = round(p * 0.88, 4)
+    entry = round(p * 1.04, 4)
+    tgt_lo = round(p * 1.15, 4)
+    tgt_hi = round(p * 1.25, 4)
+
+    risk_per_share = p - stop
+    shares = int(min(MAX_LOSS / risk_per_share, ACCOUNT_SIZE / p))
+    cost      = round(shares * p, 2)
+    max_loss  = round(shares * risk_per_share, 2)
+    profit    = f"${round(shares * (tgt_lo - p))}–${round(shares * (tgt_hi - p))}"
 
     return {
-        "ticker": stock["ticker"],
-        "company": stock.get("company", stock["ticker"]),
-        "price": str(p),
-        "change": f"+{stock['change']}",
-        "setup": "Momentum Breakout / Sub-$1 Catalyst",
-        "entry": f"Break above ${entry} with volume",
-        "stop": f"${stop}",
-        "target": f"${target_lo}–${target_hi}",
-        "shares": str(shares),
-        "cost": str(cost),
-        "max_loss": f"${max_loss_val}",
+        "ticker":        stock["ticker"],
+        "company":       stock["company"],
+        "price":         str(p),
+        "change":        f"+{stock['change']}",
+        "setup":         "Momentum Breakout / Sub-$1 Catalyst",
+        "entry":         f"Break above ${entry} with volume",
+        "stop":          f"${stop}",
+        "target":        f"${tgt_lo}–${tgt_hi}",
+        "shares":        str(shares),
+        "cost":          str(cost),
+        "max_loss":      f"${max_loss}",
         "profit_target": profit,
-        "catalyst": f"Top gainer today — +{stock['change']}% on {stock['volume']:,} volume"
+        "catalyst":      (
+            f"{stock['rel_vol']}x avg volume — "
+            f"+{stock['change']}% on {stock['volume']:,} shares traded"
+        ),
     }
 
 def main():
     stocks = fetch_sub1_movers()
-
-    picks = [build_pick(s) for s in stocks]
-
-    date_str = now.strftime("%A, %b %d, %Y")
-    updated_str = now.strftime("%I:%M %p PST")
+    picks  = [build_pick(s) for s in stocks]
 
     output = {
-        "date": date_str,
-        "updated": updated_str,
-        "picks": picks if picks else []
+        "date":    now.strftime("%A, %b %d, %Y"),
+        "updated": now.strftime("%I:%M %p PST"),
+        "picks":   picks,
     }
 
     with open("picks.json", "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"Done — {len(picks)} picks written for {date_str}")
+    print(f"Done — {len(picks)} picks written for {output['date']}")
+    for p in picks:
+        print(f"  {p['ticker']} ${p['price']} {p['change']}%")
 
 if __name__ == "__main__":
     main()

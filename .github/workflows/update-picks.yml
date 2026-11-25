@@ -2,9 +2,11 @@ name: Update Daily Stock Picks
 
 on:
   schedule:
-    # 6:30 AM PST = 14:30 UTC (non-DST) | runs Mon-Fri
+    # 6:30 AM PST = 14:30 UTC  (Nov–Mar, standard time)
     - cron: '30 14 * * 1-5'
-  workflow_dispatch: # allows manual trigger from GitHub
+    # 9:45 AM PST = 17:45 UTC  (mid-session refresh)
+    - cron: '45 17 * * 1-5'
+  workflow_dispatch:  # manual trigger from GitHub Actions tab
 
 jobs:
   update:
