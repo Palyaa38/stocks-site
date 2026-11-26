@@ -1,64 +1,6 @@
 {
   "date": "Wednesday, Nov 25, 2026",
-  "updated": "11:30 AM PST",
+  "updated": "05:10 PM PST",
   "session": "LIVE",
-  "picks": [
-    {
-      "ticker": "RAYA",
-      "company": "Erayak Power Solution Group",
-      "price": "0.68",
-      "change": "+61.97",
-      "setup": "Momentum Breakout / Sub-$1",
-      "status": "MISSED — Move already happened, do not enter",
-      "status_key": "missed",
-      "entry": "$0.72",
-      "stop": "$0.58",
-      "target": "$0.90–$1.00",
-      "shares": "434",
-      "cost": "296",
-      "max_loss": "$43",
-      "profit_target": "$95–$139",
-      "catalyst": "94x avg volume on 1.02M float — +62% on 85M shares traded",
-      "day_hi": "0.99",
-      "day_lo": "0.59"
-    },
-    {
-      "ticker": "NXAT",
-      "company": "Nexus Advanced Technologies",
-      "price": "0.62",
-      "change": "+46.24",
-      "setup": "Momentum Breakout / Sub-$1",
-      "status": "MISSED — Move already happened, do not enter",
-      "status_key": "missed",
-      "entry": "$0.68",
-      "stop": "$0.55",
-      "target": "$0.85–$0.95",
-      "shares": "483",
-      "cost": "300",
-      "max_loss": "$48",
-      "profit_target": "$111–$158",
-      "catalyst": "45x avg volume on 2M float — +56% on 90M shares traded",
-      "day_hi": "0.91",
-      "day_lo": "0.41"
-    },
-    {
-      "ticker": "WHLR",
-      "company": "Wheeler REIT",
-      "price": "0.43",
-      "change": "+31.35",
-      "setup": "Catalyst Breakout — Reverse Split",
-      "status": "MISSED — Move already happened, do not enter",
-      "status_key": "missed",
-      "entry": "$0.48",
-      "stop": "$0.37",
-      "target": "$0.58–$0.65",
-      "shares": "681",
-      "cost": "293",
-      "max_loss": "$41",
-      "profit_target": "$102–$150",
-      "catalyst": "71x avg volume — 1-for-4 reverse split effective Nov 27, 44% short float",
-      "day_hi": "0.51",
-      "day_lo": "0.40"
-    }
-  ]
+  "picks": []
 }
